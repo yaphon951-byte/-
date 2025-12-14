@@ -1,0 +1,56 @@
+-- ===== SETTINGS =====
+local SPEED_ON = 50
+local SPEED_OFF = 16
+
+-- ===== SERVICES =====
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UIS = game:GetService("UserInputService")
+local player = Players.LocalPlayer
+
+-- ===== STATES =====
+local noclip = false
+local fast = false
+
+-- ===== FUNCTIONS =====
+local function setSpeed()
+    local hum = player.Character and player.Character:FindFirstChild("Humanoid")
+    if hum then
+        hum.WalkSpeed = fast and SPEED_ON or SPEED_OFF
+    end
+end
+
+player.CharacterAdded:Connect(function()
+    task.wait(0.5)
+    setSpeed()
+end)
+
+-- ===== NOCLIP =====
+RunService.Stepped:Connect(function()
+    if noclip and player.Character then
+        for _, part in pairs(player.Character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+    end
+end)
+
+-- ===== KEYBINDS =====
+UIS.InputBegan:Connect(function(input, gpe)
+    if gpe then return end
+
+    if input.KeyCode == Enum.KeyCode.G then
+        noclip = not noclip
+        print("Noclip:", noclip and "ON" or "OFF")
+    end
+
+    if input.KeyCode == Enum.KeyCode.H then
+        fast = not fast
+        setSpeed()
+        print("Speed:", fast and "ON" or "OFF")
+    end
+end)
+
+print("Script loaded")
+print("G = Noclip | H = Speed")
